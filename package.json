@@ -1,0 +1,11 @@
+{
+  "name": "graphql-api-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Shanto",
+  "dependencies": {
+    "apollo-server": "^3.13.0",
+    "graphql": "^16.9.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
