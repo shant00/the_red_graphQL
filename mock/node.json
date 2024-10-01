@@ -8,8 +8,16 @@
         "responses": [
             "6296fcad70a0c11ddb89ccf0"
         ],
+        "responsesIds": [
+            "6296fcad70a0c11ddb89ccf0"
+        ],
         "postActions": null,
-        "actions": null,
+        "actions": [
+            "6530933e6a1690d2f0c78a92"
+        ],
+        "actionIds": [
+            "6530933e6a1690d2f0c78a92"
+        ],
         "compositeId": "V78P4OA9maz31ORn",
         "global": false,
         "redirect": null,

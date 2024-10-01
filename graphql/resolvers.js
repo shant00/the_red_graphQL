@@ -1,26 +1,38 @@
+const { nodes, triggers, responses, actions, resourceTemplates } = require('../dataSource');
+
+let nodeObjects = nodes;
 const resolvers = {
     Query: {
-        node: (parent, args, context) => {
-            const { nodeId } = args;
-            const node = context.dataSources.nodes.find(node => node._id === nodeId);
-            return node || null; // Return null if node is not found
-        },
-        nodes: (parent, args, context) => {
-            return context.dataSources.nodes || []; // Return all nodes
-        },
+        node: (_, { nodeId }) => nodeObjects.find(node => node._id === nodeId),
+        nodes: () => nodeObjects,
     },
     NodeObject: {
-        trigger: (node, args, context) => {
-            return context.dataSources.triggers.find(trigger => trigger._id === node.triggerId) || null; // Return null if trigger not found
+        trigger: (node) => triggers.find(trigger => trigger._id === node.triggerId),
+        responses: (node) => {
+            if (Array.isArray(node.responses)) {
+                return node.responses.map(id => responses.find(response => response._id === id));
+            }
+            return [];
         },
-        responses: (node, args, context) => {
-            return context.dataSources.responses.filter(response => node.responseIds.includes(response._id)) || []; // Return empty array if no responses
+        actions: (node) => {
+            // Check if actionIds exists and is an array
+            if (Array.isArray(node.actionIds)) {
+                return node.actionIds.map(id => actions.find(action => action._id === id));
+            }
+            // Return an empty array if no actionIds
+            return [];
         },
-        actions: (node, args, context) => {
-            return context.dataSources.actions.filter(action => node.actionIds.includes(action._id)) || []; // Return empty array if no actions
-        },
-
-    }
+        parentIds: (node) => node.parents.map(parent => parent._id),
+    },
+    Action: {
+        resourceTemplate: (action) => resourceTemplates.find(template => template._id === action.resourceTemplateId),
+    },
+    Trigger: {
+        resourceTemplate: (trigger) => resourceTemplates.find(template => template._id === trigger.resourceTemplateId),
+    },
+    Response: {
+        platforms: (response) => response.platforms,
+    },
 };
 
 module.exports = resolvers;

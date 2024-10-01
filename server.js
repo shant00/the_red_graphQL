@@ -32,7 +32,6 @@ app.post('/login', (req, res) => {
 
     return res.status(401).json({ message: 'Invalid credentials' });
 });
-
 // Set up Apollo Server
 const server = new ApolloServer({
     typeDefs,
