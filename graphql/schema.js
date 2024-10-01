@@ -87,6 +87,7 @@ const typeDefs = gql`
 
   type Query {
     node(nodeId: ID): NodeObject
+    nodes: [NodeObject]
   }
 `;
 

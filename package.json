@@ -5,6 +5,8 @@
   "author": "Shanto",
   "dependencies": {
     "apollo-server": "^3.13.0",
+    "apollo-server-express": "^3.13.0",
+    "express": "^4.21.0",
     "graphql": "^16.9.0",
     "jsonwebtoken": "^9.0.2"
   }

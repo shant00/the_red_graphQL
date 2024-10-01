@@ -1,22 +1,18 @@
-const resolvers = {
-    Query: {
-        node: (parent, args, context) => {
-            const { nodeId } = args;
-            const node = context.dataSources.nodes.find(node => node._id === nodeId);
-            return node;
-        }
-    },
-    NodeObject: {
-        trigger: (node, args, context) => {
-            return context.dataSources.triggers.find(trigger => trigger._id === node.triggerId);
-        },
-        responses: (node, args, context) => {
-            return context.dataSources.responses.filter(response => node.responseIds.includes(response._id));
-        },
-        actions: (node, args, context) => {
-            return context.dataSources.actions.filter(action => node.actionIds.includes(action._id));
-        }
+const jwt = require('jsonwebtoken');
+const secretKey = 'your_jwt_secret_key';
+
+const authenticate = (req) => {
+    const authHeader = req.headers.authorization || '';
+
+    const token = authHeader.replace('Bearer ', '');
+    if (!token) throw new Error('Unauthorized');
+
+    try {
+        const user = jwt.verify(token, secretKey);
+        return user;
+    } catch (e) {
+        throw new Error('Unauthorized');
     }
 };
 
-module.exports = resolvers;
+module.exports = authenticate;
