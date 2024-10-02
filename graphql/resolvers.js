@@ -1,34 +1,51 @@
-const { nodes, triggers, responses, actions, resourceTemplates } = require('../dataSource');
-
-let nodeObjects = nodes;
 const resolvers = {
     Query: {
-        node: (_, { nodeId }) => nodeObjects.find(node => node._id === nodeId),
-        nodes: () => nodeObjects,
+        node: (_, { nodeId }, { dataSources }) =>
+            dataSources.nodes.find(node => node._id === nodeId),
     },
     NodeObject: {
-        trigger: (node) => triggers.find(trigger => trigger._id === node.triggerId),
-        responses: (node) => {
+        parents: (node, _, { dataSources }) => {
+            if (Array.isArray(node.parents)) {
+                return node.parents.map(parent => dataSources.nodes.find(n => n._id === parent._id));
+            }
+            return [];
+        },
+        trigger: (node, _, { dataSources }) => {
+            if (Array.isArray(node.trigger)) {
+                return node.trigger.map(trigger => dataSources.triggers.find(t => t._id === trigger._id));
+            }
+            return [];
+        },
+        responses: (node, _, { dataSources }) => {
             if (Array.isArray(node.responses)) {
-                return node.responses.map(id => responses.find(response => response._id === id));
+                return node.responses.map(id =>
+                    dataSources.responses.find(response => response._id === id)
+                );
             }
             return [];
         },
-        actions: (node) => {
-            // Check if actionIds exists and is an array
+        actions: (node, _, { dataSources }) => {
             if (Array.isArray(node.actionIds)) {
-                return node.actionIds.map(id => actions.find(action => action._id === id));
+                return node.actionIds.map(id =>
+                    dataSources.actions.find(action => action._id === id)
+                );
             }
-            // Return an empty array if no actionIds
             return [];
         },
-        parentIds: (node) => node.parents.map(parent => parent._id),
+        parentIds: (node) => {
+            if (Array.isArray(node.parents)) {
+                return node.parents.map(parent => parent._id);
+            }
+            return [];
+        }
     },
     Action: {
-        resourceTemplate: (action) => resourceTemplates.find(template => template._id === action.resourceTemplateId),
+        resourceTemplate: (action, _, { dataSources }) =>
+            dataSources.resourceTemplates.find(template => template._id === action.resourceTemplateId),
     },
     Trigger: {
-        resourceTemplate: (trigger) => resourceTemplates.find(template => template._id === trigger.resourceTemplateId),
+        resourceTemplate: (trigger, _, { dataSources }) =>
+            dataSources.resourceTemplates.find(template => template._id === trigger.resourceTemplateId),
     },
     Response: {
         platforms: (response) => response.platforms,
